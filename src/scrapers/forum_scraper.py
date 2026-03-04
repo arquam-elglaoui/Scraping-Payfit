@@ -42,6 +42,7 @@ async def scrape_forums():
 
     browser_config = BrowserConfig(
         headless=True,
+        verbose=False,
         viewport_width=1920,
         viewport_height=1080,
     )

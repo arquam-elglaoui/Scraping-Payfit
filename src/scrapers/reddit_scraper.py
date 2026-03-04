@@ -80,6 +80,7 @@ async def scrape_reddit():
     # Configuration du navigateur (mode headless, user-agent classique)
     browser_config = BrowserConfig(
         headless=True,
+        verbose=False,
         viewport_width=1920,
         viewport_height=1080,
     )

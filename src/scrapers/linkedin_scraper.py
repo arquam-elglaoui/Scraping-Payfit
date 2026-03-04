@@ -66,6 +66,7 @@ async def scrape_linkedin_crawl4ai():
     # Mode non-headless pour réduire la détection de bot
     browser_config = BrowserConfig(
         headless=False,
+        verbose=False,
         viewport_width=1920,
         viewport_height=1080,
     )
