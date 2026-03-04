@@ -44,31 +44,28 @@ async def run_pipeline():
 
     raw_data = {}
 
-    # --- Étape 1 : Scraping (Reddit + forums en parallèle, puis LinkedIn) ---
+    # --- Étape 1 : Scraping (tout en parallèle) ---
 
-    # Reddit et forums sont indépendants → on les lance en parallèle
-    logger.info("--- Étape 1/4 : Scraping Reddit + Forums ---")
+    logger.info("--- Scraping : Reddit + Forums + Trends + LinkedIn en parallèle ---")
 
     from scrapers.reddit_scraper import scrape_reddit
     from scrapers.forum_scraper import scrape_forums
+    from scrapers.trends_scraper import scrape_trends
+    from scrapers.linkedin_scraper import scrape_linkedin
 
+    # Reddit, Forums et LinkedIn sont async → create_task
     reddit_task = asyncio.create_task(scrape_reddit())
     forums_task = asyncio.create_task(scrape_forums())
+    linkedin_task = asyncio.create_task(scrape_linkedin())
 
+    # Trends est synchrone → on le lance dans un thread pour ne pas bloquer
+    trends_task = asyncio.get_event_loop().run_in_executor(None, scrape_trends)
+
+    # Attend que tout finisse en parallèle
     raw_data["reddit"] = await reddit_task
     raw_data["forums"] = await forums_task
-
-    # Google Trends (synchrone, pas d'async)
-    logger.info("--- Étape 2/4 : Google Trends ---")
-
-    from scrapers.trends_scraper import scrape_trends
-    raw_data["trends"] = scrape_trends()
-
-    # LinkedIn (le plus lent et risqué → en dernier)
-    logger.info("--- Étape 3/4 : LinkedIn ---")
-
-    from scrapers.linkedin_scraper import scrape_linkedin
-    raw_data["linkedin"] = await scrape_linkedin()
+    raw_data["trends"] = await trends_task
+    raw_data["linkedin"] = await linkedin_task
 
     # --- Étape 2 : Sauvegarde des données brutes ---
 

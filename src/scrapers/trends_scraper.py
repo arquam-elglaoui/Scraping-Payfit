@@ -45,50 +45,60 @@ def scrape_trends():
 
     all_trends = []
 
+    # Délai de base entre les requêtes (secondes)
+    base_delay = 15
+
     for group_name, keywords in keyword_groups.items():
         logger.info("Trends : groupe '%s' → %s", group_name, keywords)
 
-        try:
-            # Construit la requête pour ce groupe (90 derniers jours, France)
-            pytrends.build_payload(keywords, cat=0, timeframe="today 3-m", geo="FR")
+        # Retry avec backoff exponentiel (max 2 tentatives)
+        for attempt in range(3):
+            try:
+                # Recréer la session pytrends à chaque retry pour contourner le blocage
+                if attempt > 0:
+                    pytrends = TrendReq(hl="fr-FR", tz=60)
 
-            # Intérêt dans le temps → identifie les montées
-            interest = pytrends.interest_over_time()
+                pytrends.build_payload(keywords, cat=0, timeframe="today 3-m", geo="FR")
 
-            # Requêtes associées → détecte les sujets émergents ("rising")
-            related = pytrends.related_queries()
+                interest = pytrends.interest_over_time()
+                related = pytrends.related_queries()
 
-            for keyword in keywords:
-                trend_entry = {
-                    "keyword": keyword,
-                    "group": group_name,
-                    "scraped_at": datetime.now().isoformat(),
-                    "rising_queries": [],
-                    "top_queries": [],
-                    "avg_interest": 0,
-                }
+                for keyword in keywords:
+                    trend_entry = {
+                        "keyword": keyword,
+                        "group": group_name,
+                        "scraped_at": datetime.now().isoformat(),
+                        "rising_queries": [],
+                        "top_queries": [],
+                        "avg_interest": 0,
+                    }
 
-                # Score moyen d'intérêt sur la période
-                if not interest.empty and keyword in interest.columns:
-                    trend_entry["avg_interest"] = int(interest[keyword].mean())
+                    if not interest.empty and keyword in interest.columns:
+                        trend_entry["avg_interest"] = int(interest[keyword].mean())
 
-                # Requêtes en hausse = sujets émergents
-                if keyword in related and related[keyword]["rising"] is not None:
-                    rising_df = related[keyword]["rising"]
-                    trend_entry["rising_queries"] = rising_df.to_dict("records")
+                    if keyword in related and related[keyword]["rising"] is not None:
+                        rising_df = related[keyword]["rising"]
+                        trend_entry["rising_queries"] = rising_df.to_dict("records")
 
-                # Requêtes top = sujets déjà populaires
-                if keyword in related and related[keyword]["top"] is not None:
-                    top_df = related[keyword]["top"]
-                    trend_entry["top_queries"] = top_df.to_dict("records")
+                    if keyword in related and related[keyword]["top"] is not None:
+                        top_df = related[keyword]["top"]
+                        trend_entry["top_queries"] = top_df.to_dict("records")
 
-                all_trends.append(trend_entry)
+                    all_trends.append(trend_entry)
 
-            # Pause longue pour éviter le rate limiting Google (429)
-            time.sleep(10)
+                # Succès → pause normale avant le groupe suivant
+                time.sleep(base_delay)
+                break
 
-        except Exception as e:
-            logger.error("Erreur Trends pour '%s' : %s", group_name, e)
+            except Exception as e:
+                if "429" in str(e) and attempt < 2:
+                    # Rate-limit → backoff exponentiel (30s, 60s)
+                    wait = 30 * (2 ** attempt)
+                    logger.warning("Trends 429 pour '%s', retry dans %ds...", group_name, wait)
+                    time.sleep(wait)
+                else:
+                    logger.error("Erreur Trends pour '%s' : %s", group_name, e)
+                    break
 
     logger.info("Trends : %d résultats au total", len(all_trends))
     return all_trends
