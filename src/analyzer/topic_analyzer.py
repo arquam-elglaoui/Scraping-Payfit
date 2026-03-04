@@ -18,12 +18,30 @@ logger = logging.getLogger(__name__)
 # Prompt optimisé pour l'extraction de topics émergents PayFit
 ANALYSIS_PROMPT = """Tu es un expert SEO spécialisé dans le domaine RH et paie en France.
 
-**Contexte :** PayFit est un logiciel SaaS de paie et RH ciblant les TPE/PME françaises.
-Ses concurrents sont : Sage, Cegid, Lucca, Factorial.
-Son contenu SEO couvre : fiche de paie, gestion du personnel, SIRH, congés, embauche, charges sociales.
+**Contexte PayFit :**
+- Logiciel SaaS de paie et RH ciblant les TPE/PME françaises (1 à 500 salariés)
+- Concurrents principaux : Sage, Cegid, Lucca, Factorial, Nibelis, Silae
+- Piliers SEO actuels du blog PayFit (déjà couverts, à NE PAS proposer) :
+  • Fiche de paie / bulletin de salaire (très bien positionné)
+  • Congés payés calcul (très bien positionné)
+  • Contrat de travail CDI/CDD (bien positionné)
+  • Embauche / DPAE (bien positionné)
+  • Charges sociales / charges patronales (bien positionné)
+  • Gestion du personnel / SIRH (moyennement positionné)
 
-**Ta mission :** À partir des données collectées (Reddit, LinkedIn, forums RH, Google Trends),
+**Objectif hackathon :** Détecter les questions ÉMERGENTES que les gens se posent MAINTENANT
+sur la paie et les RH en France, et que PayFit ne couvre pas encore. L'idée est de créer du
+contenu SEO AVANT la concurrence sur ces nouveaux sujets.
+
+**Ta mission :** À partir des données collectées (Reddit FR, forums RH français, Google Trends FR, LinkedIn),
 identifie les **20 thématiques émergentes** avec le plus fort potentiel SEO pour PayFit.
+
+Concentre-toi sur :
+- Les questions que les salariés/employeurs français posent en ce moment
+- Les changements réglementaires 2025 (SMIC, prime partage valeur, congés maladie, etc.)
+- Les problèmes récurrents sans bonne réponse en ligne
+- Les tendances IA/automatisation appliquées à la paie et aux RH
+- Les comparatifs de logiciels paie où PayFit est absent
 
 Pour chaque thématique, retourne un JSON structuré :
 ```json
@@ -43,13 +61,6 @@ Pour chaque thématique, retourne un JSON structuré :
 ]
 ```
 
-**Critères de sélection :**
-- Priorise les sujets que PayFit ne couvre PAS encore
-- Priorise les questions récurrentes sans bonne réponse en ligne
-- Priorise les changements réglementaires récents
-- Priorise les sujets où les concurrents sont absents
-- Le score de potentiel (1-10) combine : volume estimé + tendance haussière + pertinence PayFit
-
 **IMPORTANT :** Retourne UNIQUEMENT le JSON, sans texte autour.
 
 Voici les données collectées :
@@ -67,7 +78,7 @@ def prepare_data_summary(raw_data):
     reddit_posts = raw_data.get("reddit", [])
     if reddit_posts:
         summary_parts.append("=== REDDIT ===")
-        for post in reddit_posts[:50]:
+        for post in reddit_posts[:100]:
             title = post.get("title", "")
             source = post.get("source", "")
             score = post.get("score", "0")

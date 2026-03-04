@@ -5,16 +5,17 @@
       "vosfinances",
       "france",
       "AskFrance",
-      "conseiljuridique"
+      "conseiljuridique",
+      "EntrepseFrance",
+      "freelance"
     ]
   },
   "en_rh_payroll": {
-    "description": "Subreddits anglophones RH et paie (tendances globales émergentes)",
+    "description": "Subreddits anglophones RH et paie (tendances globales à surveiller)",
     "subreddits": [
       "humanresources",
       "payroll",
-      "smallbusiness",
-      "startups"
+      "smallbusiness"
     ]
   },
   "search_queries_fr": [
@@ -27,15 +28,23 @@
     "calcul salaire",
     "embauche",
     "licenciement",
-    "rupture conventionnelle"
-  ],
-  "search_queries_en": [
-    "payroll software",
-    "HR automation",
-    "payslip",
-    "employee onboarding",
-    "leave management",
-    "AI payroll",
-    "small business HR"
+    "rupture conventionnelle",
+    "prime partage valeur 2025",
+    "SMIC 2025",
+    "DSN déclaration",
+    "arrêt maladie calcul",
+    "convention collective",
+    "mutuelle entreprise obligatoire",
+    "télétravail droit",
+    "solde de tout compte",
+    "période essai CDI",
+    "DPAE employeur",
+    "RTT calcul",
+    "heures supplémentaires calcul",
+    "salaire brut net",
+    "indemnité licenciement",
+    "SIRH PME",
+    "automatisation paie",
+    "IA ressources humaines"
   ]
 }
