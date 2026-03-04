@@ -1,0 +1,8 @@
+.env
+output/
+__pycache__/
+*.pyc
+.crawl4ai/
+crawl4ai/
+venv/
+Hackathon 2 - inter promos/

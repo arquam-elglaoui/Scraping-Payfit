@@ -1,0 +1,5 @@
+crawl4ai>=0.7.4
+pytrends
+openai
+python-dotenv
+httpx

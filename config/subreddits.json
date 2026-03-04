@@ -1,0 +1,41 @@
+{
+  "fr_rh_paie": {
+    "description": "Subreddits francophones où on parle salaire, paie, droit du travail",
+    "subreddits": [
+      "vosfinances",
+      "france",
+      "AskFrance",
+      "conseiljuridique"
+    ]
+  },
+  "en_rh_payroll": {
+    "description": "Subreddits anglophones RH et paie (tendances globales émergentes)",
+    "subreddits": [
+      "humanresources",
+      "payroll",
+      "smallbusiness",
+      "startups"
+    ]
+  },
+  "search_queries_fr": [
+    "fiche de paie",
+    "bulletin de salaire",
+    "congés payés",
+    "contrat de travail",
+    "charges sociales",
+    "logiciel paie",
+    "calcul salaire",
+    "embauche",
+    "licenciement",
+    "rupture conventionnelle"
+  ],
+  "search_queries_en": [
+    "payroll software",
+    "HR automation",
+    "payslip",
+    "employee onboarding",
+    "leave management",
+    "AI payroll",
+    "small business HR"
+  ]
+}

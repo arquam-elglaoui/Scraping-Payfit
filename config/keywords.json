@@ -1,0 +1,50 @@
+{
+  "_description": "Mots-clés alignés sur les contenus PayFit et le brief hackathon (Problématique 2). Groupés par 5 max pour pytrends.",
+
+  "paie_core": {
+    "description": "Pilier n°1 PayFit : la paie (top content blog)",
+    "keywords": ["fiche de paie", "bulletin de salaire", "logiciel de paie", "fiche de paie en ligne", "comprendre sa fiche de paie"]
+  },
+  "gestion_rh": {
+    "description": "Pilier n°2 PayFit : gestion du personnel et SIRH",
+    "keywords": ["gestion du personnel", "SIRH", "logiciel RH PME", "onboarding salarié", "documents embauche"]
+  },
+  "conges_absences": {
+    "description": "Pilier n°3 PayFit : congés, absences, temps de travail",
+    "keywords": ["calcul congés payés", "RTT calcul", "arrêt maladie indemnisation", "calcul heure de travail", "solde de tout compte"]
+  },
+  "embauche_contrat": {
+    "description": "Pilier n°4 PayFit : embauche et contrat de travail",
+    "keywords": ["DPAE en ligne", "contrat de travail CDI", "période essai durée", "rupture conventionnelle calcul", "promesse embauche"]
+  },
+  "charges_remuneration": {
+    "description": "Pilier n°5 : charges, coût salarié, simulateurs (top PayFit)",
+    "keywords": ["calcul charges patronales", "coût salarié simulateur", "salaire brut net", "charges sociales taux", "prime partage valeur"]
+  },
+  "reglementaire_emergent": {
+    "description": "Sujets réglementaires récents (forts pics de recherche)",
+    "keywords": ["convention collective 2025", "revalorisation SMIC", "congés payés maladie", "télétravail obligation employeur", "mutuelle entreprise obligatoire"]
+  },
+  "outils_concurrence": {
+    "description": "Requêtes comparatif/achat — intention transactionnelle (concurrents PDF 08)",
+    "keywords": ["meilleur logiciel paie PME", "PayFit avis", "alternative Sage paie", "Lucca vs PayFit", "logiciel paie gratuit"]
+  },
+  "ia_tendances": {
+    "description": "Tendances émergentes IA + RH (sujet hackathon)",
+    "keywords": ["IA ressources humaines", "automatisation paie", "chatbot RH", "intelligence artificielle recrutement", "logiciel paie IA"]
+  },
+
+  "linkedin_keywords": {
+    "description": "Termes de recherche optimisés pour LinkedIn (posts pro)",
+    "keywords": [
+      "fiche de paie",
+      "logiciel paie PME",
+      "SIRH TPE",
+      "automatisation RH",
+      "gestion paie",
+      "DRH PME",
+      "conformité paie",
+      "digitalisation RH"
+    ]
+  }
+}
