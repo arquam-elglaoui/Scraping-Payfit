@@ -51,8 +51,8 @@ def build_urls(config):
     return urls
 
 
-# Schéma CSS pour extraire les posts depuis old.reddit.com
-POST_SCHEMA = {
+# Schéma CSS pour extraire les posts depuis les pages subreddit (old.reddit.com)
+SUBREDDIT_SCHEMA = {
     "name": "reddit_posts",
     "baseSelector": ".thing.link",
     "fields": [
@@ -63,6 +63,20 @@ POST_SCHEMA = {
         {"name": "subreddit", "selector": ".subreddit", "type": "text"},
         {"name": "author", "selector": ".author", "type": "text"},
         {"name": "time", "selector": "time", "type": "attribute", "attribute": "datetime"},
+    ],
+}
+
+# Schéma CSS pour les pages de recherche Reddit (structure HTML différente)
+SEARCH_SCHEMA = {
+    "name": "reddit_search_results",
+    "baseSelector": ".search-result",
+    "fields": [
+        {"name": "title", "selector": "a.search-title", "type": "text"},
+        {"name": "url", "selector": "a.search-title", "type": "attribute", "attribute": "href"},
+        {"name": "subreddit", "selector": "a.search-subreddit-link", "type": "text"},
+        {"name": "author", "selector": "a.author", "type": "text"},
+        {"name": "time", "selector": "time", "type": "attribute", "attribute": "datetime"},
+        {"name": "snippet", "selector": ".search-result-body", "type": "text"},
     ],
 }
 
@@ -85,19 +99,19 @@ async def scrape_reddit():
         viewport_height=1080,
     )
 
-    # Stratégie d'extraction CSS pour old.reddit.com
-    extraction = JsonCssExtractionStrategy(schema=POST_SCHEMA)
-
-    crawler_config = CrawlerRunConfig(
-        extraction_strategy=extraction,
-        page_timeout=30000,
-    )
-
     all_posts = []
 
     async with AsyncWebCrawler(config=browser_config) as crawler:
         for entry in url_entries:
             try:
+                # Schéma différent selon le type de page (subreddit vs recherche)
+                schema = SEARCH_SCHEMA if entry["type"] == "search" else SUBREDDIT_SCHEMA
+                extraction = JsonCssExtractionStrategy(schema=schema)
+                crawler_config = CrawlerRunConfig(
+                    extraction_strategy=extraction,
+                    page_timeout=30000,
+                )
+
                 result = await crawler.arun(url=entry["url"], config=crawler_config)
 
                 if not result.success:

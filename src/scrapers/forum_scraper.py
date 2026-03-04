@@ -50,7 +50,7 @@ async def scrape_forums():
     # Filtre BM25 : ne garde que le contenu pertinent RH/paie
     content_filter = BM25ContentFilter(
         user_query=RELEVANCE_QUERY,
-        bm25_threshold=1.0,
+        bm25_threshold=0.5,
     )
 
     md_generator = DefaultMarkdownGenerator(content_filter=content_filter)

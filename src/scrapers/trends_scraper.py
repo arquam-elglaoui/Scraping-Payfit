@@ -84,8 +84,8 @@ def scrape_trends():
 
                 all_trends.append(trend_entry)
 
-            # Pause pour éviter le rate limiting Google
-            time.sleep(3)
+            # Pause longue pour éviter le rate limiting Google (429)
+            time.sleep(10)
 
         except Exception as e:
             logger.error("Erreur Trends pour '%s' : %s", group_name, e)
