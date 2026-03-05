@@ -108,15 +108,15 @@ def prepare_data_summary(raw_data):
             if title:
                 summary_parts.append(f"- {title}")
 
-    # LinkedIn
+    # LinkedIn (augmenté à 100 posts pour exploiter les 793 posts récupérés)
     linkedin_posts = raw_data.get("linkedin", [])
     if linkedin_posts:
-        summary_parts.append("\n=== LINKEDIN ===")
-        for post in linkedin_posts[:20]:
+        summary_parts.append(f"\n=== LINKEDIN ({len(linkedin_posts)} posts FR) ===")
+        for post in linkedin_posts[:100]:
             title = post.get("title", post.get("content", ""))[:150]
             keyword = post.get("keyword", "")
             if title:
-                summary_parts.append(f"[{keyword}] {title}")
+                summary_parts.append(f"- {title}")
 
     return "\n".join(summary_parts)
 
