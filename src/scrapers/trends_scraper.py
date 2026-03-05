@@ -45,18 +45,17 @@ def scrape_trends():
 
     all_trends = []
 
-    # Délai de base entre les requêtes (secondes)
-    base_delay = 15
+    # Délai entre les groupes (secondes) — Google rate-limit agressivement
+    base_delay = 30
 
     for group_name, keywords in keyword_groups.items():
         logger.info("Trends : groupe '%s' → %s", group_name, keywords)
 
-        # Retry avec backoff exponentiel (max 2 tentatives)
-        for attempt in range(3):
+        # Retry avec backoff exponentiel (max 4 tentatives : 60s, 120s, 180s)
+        for attempt in range(4):
             try:
-                # Recréer la session pytrends à chaque retry pour contourner le blocage
-                if attempt > 0:
-                    pytrends = TrendReq(hl="fr-FR", tz=60)
+                # Nouvelle session pytrends à chaque tentative (nouveau cookie)
+                pytrends = TrendReq(hl="fr-FR", tz=60)
 
                 pytrends.build_payload(keywords, cat=0, timeframe="today 3-m", geo="FR")
 
@@ -86,15 +85,16 @@ def scrape_trends():
 
                     all_trends.append(trend_entry)
 
-                # Succès → pause normale avant le groupe suivant
+                logger.info("  Trends '%s' : OK (%d mots-clés)", group_name, len(keywords))
+                # Pause entre les groupes pour éviter le rate-limit
                 time.sleep(base_delay)
                 break
 
             except Exception as e:
-                if "429" in str(e) and attempt < 2:
-                    # Rate-limit → backoff exponentiel (30s, 60s)
-                    wait = 30 * (2 ** attempt)
-                    logger.warning("Trends 429 pour '%s', retry dans %ds...", group_name, wait)
+                if "429" in str(e) and attempt < 3:
+                    # Rate-limit → backoff croissant (60s, 120s, 180s)
+                    wait = 60 * (attempt + 1)
+                    logger.warning("Trends 429 pour '%s', retry %d/3 dans %ds...", group_name, attempt + 1, wait)
                     time.sleep(wait)
                 else:
                     logger.error("Erreur Trends pour '%s' : %s", group_name, e)

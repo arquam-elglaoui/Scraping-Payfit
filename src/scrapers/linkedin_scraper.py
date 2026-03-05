@@ -141,10 +141,11 @@ async def scrape_linkedin_crawl4ai():
 
 
 async def scrape_linkedin_apify():
-    """Fallback : scrape LinkedIn via l'API Apify (promo code hackathon).
+    """Scrape LinkedIn via l'API Apify.
 
     Nécessite APIFY_KEY dans le .env.
-    Actor utilisé : apify/linkedin-post-search-scraper
+    Actor : harvestapi/linkedin-post-search (no cookies, $0.002/post)
+    1 page par query = ~50 posts max, coût < $1 au total.
     """
     import httpx
 
@@ -157,14 +158,14 @@ async def scrape_linkedin_apify():
 
     logger.info("LinkedIn Apify : lancement avec %d mots-clés", len(keywords))
 
-    # Lance l'actor Apify
+    # Lance l'actor avec searchQueries (format attendu par harvestapi)
     async with httpx.AsyncClient(timeout=120) as client:
         run_response = await client.post(
-            "https://api.apify.com/v2/acts/apify~linkedin-post-search-scraper/runs",
+            "https://api.apify.com/v2/acts/harvestapi~linkedin-post-search/runs",
             headers={"Authorization": f"Bearer {api_key}"},
             json={
-                "keywords": keywords,
-                "maxResults": 50,
+                "searchQueries": keywords,
+                "scrapePages": 1,  # 1 page ≈ 50 posts, minimise le coût
             },
         )
 
@@ -176,7 +177,7 @@ async def scrape_linkedin_apify():
         run_id = run_data["id"]
         logger.info("Apify : run lancé → %s", run_id)
 
-        # Polling jusqu'à la fin du run
+        # Polling jusqu'à la fin du run (max 5 min)
         for _ in range(30):
             await asyncio.sleep(10)
             status_resp = await client.get(
@@ -199,15 +200,18 @@ async def scrape_linkedin_apify():
 
         items = dataset_resp.json()
 
+        # Champs de sortie harvestapi : content, linkedinUrl, id
         posts = []
         for item in items:
-            posts.append({
-                "title": item.get("text", "")[:200],
-                "author": item.get("authorName", ""),
-                "keyword": item.get("query", ""),
-                "source": "linkedin_apify",
-                "scraped_at": datetime.now().isoformat(),
-            })
+            content = item.get("content", "")
+            if content:
+                posts.append({
+                    "title": content[:200],
+                    "content": content,
+                    "url": item.get("linkedinUrl", ""),
+                    "source": "linkedin_apify",
+                    "scraped_at": datetime.now().isoformat(),
+                })
 
         logger.info("LinkedIn Apify : %d posts récupérés", len(posts))
         return posts
